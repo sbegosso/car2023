@@ -18,6 +18,11 @@ class SiteText:
     def __init__(self, link: str) -> None:
         """
         Constructor function
+
+        Params:
+            self.site
+            self.soup
+            self.text_list
         """
         self.site = requests.get(link)
         self.soup = BeautifulSoup(self.site.content, 'html.parser')
@@ -45,4 +50,3 @@ class SiteText:
 
 site_text = SiteText(link)
 site_text.remove_whitespace()
-print(len(site_text.text_list))
