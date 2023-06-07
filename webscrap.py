@@ -11,7 +11,7 @@ LINK = str(sys.argv[1])
 
 #key words to search for
 CAR_COMPANIES = [
-    "Toyota", "Volkswagen", "General Motors", "Ford", "Honda", "BMW", "Mercedes-Benz", "Nissan",
+    "Toyota", "Volkswagen", "General Motors", "GM", "Ford", "Honda", "BMW", "Mercedes-Benz", "Nissan",
     "Tesla", "Audi", "Hyundai","Kia", "Volvo", "Jaguar", "Land Rover", "Porsche", "Subaru", "Mazda",
     "Fiat", "Chrysler", "Mitsubishi", "Peugeot", "Renault", "Aston Martin", "Ferrari", "Lamborghini",
     "Rolls-Royce", "Bentley", "Maserati", "Bugatti","Alfa Romeo", "Lotus", "McLaren", "Mini", "GMC",
@@ -45,9 +45,15 @@ class SiteText:
             self.soup
             self.text_list
         """
-        self.link = link
+        self.link = str(link)
         self.site = requests.get(link)
-        self.soup = BeautifulSoup(self.site.content, 'html.parser')
+
+        content_type = self.site.headers.get('Content-Type')
+        
+        if 'xml' in content_type:
+            self.soup = BeautifulSoup(self.site.content, features='xml')
+        else:
+            self.soup = BeautifulSoup(self.site.content, 'html.parser')
 
         all_text = self.soup.get_text()
         self.text_list = all_text.splitlines()
@@ -56,7 +62,24 @@ class SiteText:
             if not stripped_text:
                 self.text_list.remove(t)
 
-    def remove_whitespace(self) -> List[str]:
+    def get_title(self) -> str:
+        """
+        Returns the title of the website
+        """
+        return self.soup.title.text
+    
+    def chk_for_keys(self, phrase: str) -> bool:
+        """
+        Checks if a given phrase contains any key words
+        """
+        words = phrase.split()
+        for word in words:
+            if word in CAR_COMPANIES or word.lower() in KEY_WORDS or '$' in word:
+                return True
+        return False
+
+    @property
+    def simple_tl(self) -> List[str]:
         """
         Removes all white space in a string that's not directly adjacent to a word
         for all strings in a list
@@ -73,11 +96,11 @@ class SiteText:
 
     def search_for_key_words(self) -> List[str]:
         """
-        
+        Searches through the simple text lists for any key words or names of car companies \
+        and then returns the phrases that they are found in
         """
         important_phrases = []
-        cleaned_text = self.remove_whitespace()
-        for phrase in cleaned_text:
+        for phrase in self.simple_tl:
             words = phrase.split()
             for word in words:
                 if word in CAR_COMPANIES or word.lower() in KEY_WORDS\
@@ -97,9 +120,12 @@ class SiteText:
         new_links = []
         for l in links:
             if l[0] == '/':
-                new_links.append(self.link + l)
+                new_links.append(self.link[0: len(self.link) - 1] + l)
+            elif l.__contains__(self.link):
+                new_links.append(l)
         return new_links
 
 
-site_text = SiteText(LINK)
-print(site_text.search_for_key_words())
+if __name__ == "__main__":
+    site_text = SiteText(LINK)
+    print(site_text.get_title())
