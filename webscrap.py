@@ -55,18 +55,18 @@ class SiteText:
         else:
             self.soup = BeautifulSoup(self.site.content, 'html.parser')
 
-        all_text = self.soup.get_text()
+        """all_text = self.soup.get_text()
         self.text_list = all_text.splitlines()
         for t in self.text_list[:]:
             stripped_text = t.strip()
             if not stripped_text:
-                self.text_list.remove(t)
+                self.text_list.remove(t)"""
 
     def get_title(self) -> str:
         """
         Returns the title of the website
         """
-        return self.soup.title.text
+        return self.soup.title.string
     
     def chk_for_keys(self, phrase: str) -> bool:
         """
