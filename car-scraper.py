@@ -3,11 +3,15 @@ import requests
 import os
 from bs4 import BeautifulSoup as bs
 import sys
+import csv
+from datetime import date
 
 #input link
-#LINK = str(sys.argv[1])
+LINK1 = str(sys.argv[1])
+LINK2 = str(sys.argv[2])
+LINK3 = str(sys.argv[3])
 
-LINKS = ['https://www.constructiondive.com/', 'https://electrek.co/', 'https://www.areadevelopment.com/']
+LINKS = [LINK1, LINK2, LINK3]
 
 #key words to search for
 KEY_WORDS = [
@@ -19,10 +23,9 @@ KEY_WORDS = [
     "lexus","abarth","mahindra","tata motors","great wall motors","byd auto","geely","chery",
     "ssangyong","haval","proton","perodua","isuzu","faw group","changan automobile","brilliance auto",
     "gac group","jac motors","dongfeng motor","haima automobile","roewe","baic group","wuling motors",
-    "mercedes-benz", "nissan", 
+    "mercedes-benz", "nissan", "electric", "battery"
     "investment", "acquire", "acquisition","stake", "equity", "funding", "shareholding", "merger", "invest", "$"
 ]
-
 ANTI_KEY_WORDS = [
     "news", "rumor", "rumors", "rumored", "guide", "sec", "potential", "maybe", 
 ]
@@ -31,6 +34,7 @@ def go(link):
     """
     The function where the the bfs search through the links exists
     """
+    print("SEARCHING THROUGH: {}".format(link))
     important_links = set()
     visited_links = set()
     queue = [(link, 0)]
@@ -50,12 +54,14 @@ def go(link):
         #extract all the links on the page
         all_links = find_all_links(link, soup)
 
+        print('...')
+
         if depth < 1:
             new_depth = depth + 1
             for url in all_links:
                 if url not in visited_links and url[len(url) - 1] == '/':
                     queue.append((url, new_depth))
-    print("THE SEARCH IS COMPLETE for {}".format(link))
+    print("SEARCH IS COMPLETE FOR: {}".format(link))
     return important_links
 
 def multi_go(links):
@@ -79,7 +85,7 @@ def chk_title(title):
     for bad_word in ANTI_KEY_WORDS:
         if bad_word in str_title:
             return False
-    return len(word_lst) > 1
+    return len(word_lst) > 1 and len(str_title.split()) > 4
         
 
 def get_request(link):
@@ -120,6 +126,13 @@ def find_all_links(link, soup):
             elif l.__contains__(link):
                 new_links.append(l)
         return new_links
+
+def create_csv():
+    """
+    Creates a csv file based on the important links found
+    """
+    with open(''):
+        pass
 
 if __name__ == "__main__":
     important_links = multi_go(LINKS)
