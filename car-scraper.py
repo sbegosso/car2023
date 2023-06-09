@@ -23,7 +23,7 @@ KEY_WORDS = [
     "lexus","abarth","mahindra","tata motors","great wall motors","byd auto","geely","chery",
     "ssangyong","haval","proton","perodua","isuzu","faw group","changan automobile","brilliance auto",
     "gac group","jac motors","dongfeng motor","haima automobile","roewe","baic group","wuling motors",
-    "mercedes-benz", "nissan", "electric", "battery"
+    "mercedes-benz", "nissan", "electric", "battery", "plant", 
     "investment", "acquire", "acquisition","stake", "equity", "funding", "shareholding", "merger", "invest", "$"
 ]
 ANTI_KEY_WORDS = [
