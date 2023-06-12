@@ -14,9 +14,14 @@ LINK3 = str(sys.argv[3])
 
 LINKS = [LINK1, LINK2, LINK3]
 
+FIELDS = ['Date Accessed', 'URL', 'Title']
+
+CURR_DATE = date.today()
+F_CURR_DATE = CURR_DATE.strftime('%m-%d-%Y')
+
 #key words to search for
 KEY_WORDS = [
-    " ev ", " evs ", "vehicle", "toyota", "volkswagen", "general motors", "gm", "ford", "honda", "bmw",
+    " ev", " ev ", " evs ", "vehicle", "toyota", "volkswagen", "general motors", "gm", "ford", "honda", "bmw",
     "tesla", "audi", "hyundai","kia", "volvo", "jaguar", "land rover", "porsche", "subaru", "mazda",
     "fiat", "chrysler", "mitsubishi", "peugeot", "renault", "aston martin", "ferrari", "lamborghini",
     "rolls-royce", "bentley", "maserati", "bugatti","alfa romeo", "lotus", "mclaren", "mini", "gmc",
@@ -28,7 +33,8 @@ KEY_WORDS = [
     "investment", "acquire", "acquisition","stake", "equity", "funding", "shareholding", "merger", "invest", "$"
 ]
 ANTI_KEY_WORDS = [
-    "rumor", "rumors", "rumored", "guide", " sec ", "potential", "maybe", "podcast", "cute", "ebike"
+    "rumor", "rumors", "rumored", "guide", " sec ", "potential", "maybe", "podcast", "cute", "ebike", "alibaba", 
+    "concept", "explorer"
 ]
 
 def go(link):
@@ -45,21 +51,27 @@ def go(link):
         current_url, depth = queue.pop(0)
         visited_links.add(current_url)
 
-        req = get_request(current_url)
-        soup = bs(req.content, "html5lib")
+        print(current_url)
 
-        #checks the title for key words
-        if chk_title(soup.title):
-            important_links.add((current_url, soup.title))
+        try:
+            req = get_request(current_url)
+            soup = bs(req.content, "html5lib")
 
-        #extract all the links on the page
-        all_links = find_all_links(link, soup)
+            #checks the title for key words
+            if chk_title(soup.title):
+                important_links.add((CURR_DATE, current_url, soup.title.string))
 
-        if depth < 1:
-            new_depth = depth + 1
-            for url in all_links:
-                if url not in visited_links and url[len(url) - 1] == '/':
-                    queue.append((url, new_depth))
+            if depth < 1:
+                new_depth = depth + 1
+                
+                #extract all the links on the page
+                all_links = find_all_links(link, soup)
+                
+                for url in all_links:
+                    if url not in visited_links and url[len(url) - 1] == '/':
+                        queue.append((url, new_depth))
+        except:
+            pass
 
     print("SEARCH IS COMPLETE FOR: {}".format(link))
     return important_links
@@ -85,7 +97,7 @@ def chk_title(title):
     for bad_word in ANTI_KEY_WORDS:
         if bad_word in str_title:
             return False
-    return len(word_lst) > 1 and len(str_title.split()) > 4
+    return len(word_lst) > 1 and len(str_title.split()) > 5
         
 
 def get_request(link):
@@ -123,23 +135,34 @@ def find_all_links(link, soup):
         links = [str(tag.get('href')) for tag in anchor_tags]
         new_links = []
         for l in links:
-            if l[0] == '/':
-                new_links.append(link[0: len(link) - 1] + l)
-            elif l.__contains__(link):
+            if l.__contains__(link):
                 new_links.append(l)
+            elif l[0] == '/':
+                new_links.append(link[0: len(link) - 1] + l)
         return new_links
 
-def create_csv(data):
+def clean_data(data):
     """
-    Creates a csv file based on the important links found
+    Takes input from the output of the go() method and converts it from a 
+    set of tuples to a list of lists. Also cleans up the titles.
+    """
+    list_of_lists = [list(t) for t in data]
+    return list_of_lists
+
+def create_csv(fields, rows):
+    """
+    Turning the above data into a csv file... kind of an experiment for now
     """
     curr_date = date.today()
-    formatted_curr_date = curr_date.strftime('%m/%d/%Y')
+    formatted_curr_date = curr_date.strftime('%m-%d-%Y')
 
-    filename = '{}_scraped_links.csv'.format(formatted_curr_date)
-    with open(filename, 'w') as csvfile:
+    filename = '{}_scraped_urls.csv'.format(formatted_curr_date)
+    with open(filename, 'w', newline = '') as csvfile:
+
         csvwriter = csv.writer(csvfile)
-        csvwriter.writerows(data)
+        csvwriter.writerow(fields)
+        csvwriter.writerows(rows)
+        csvwriter.writerow(LINKS)
 
 def to_string(important_links):
     """
@@ -156,5 +179,5 @@ def to_string(important_links):
 
 if __name__ == "__main__":
     important_links = multi_go(LINKS)
-    print(important_links)
-    #create_csv(important_links)
+    print(clean_data(important_links))
+    create_csv(FIELDS, clean_data(important_links))
