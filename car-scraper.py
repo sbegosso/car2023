@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup as bs
 import sys
 import csv
 from datetime import date
+import re
 
 #input link
 LINK1 = str(sys.argv[1])
@@ -23,11 +24,11 @@ KEY_WORDS = [
     "lexus","abarth","mahindra","tata motors","great wall motors","byd auto","geely","chery",
     "ssangyong","haval","proton","perodua","isuzu","faw group","changan automobile","brilliance auto",
     "gac group","jac motors","dongfeng motor","haima automobile","roewe","baic group","wuling motors",
-    "mercedes-benz", "nissan", "electric", "battery", "plant", 
+    "mercedes-benz", "nissan", "electric", "battery", "plant", "expand", "report", "production",
     "investment", "acquire", "acquisition","stake", "equity", "funding", "shareholding", "merger", "invest", "$"
 ]
 ANTI_KEY_WORDS = [
-    "news", "rumor", "rumors", "rumored", "guide", "sec", "potential", "maybe", 
+    "rumor", "rumors", "rumored", "guide", " sec ", "potential", "maybe", "podcast", "cute", "ebike"
 ]
 
 def go(link):
@@ -53,8 +54,6 @@ def go(link):
 
         #extract all the links on the page
         all_links = find_all_links(link, soup)
-
-        print('...')
 
         if depth < 1:
             new_depth = depth + 1
@@ -98,11 +97,13 @@ def get_request(link):
         try:
             r = requests.get(link)
             if r.status_code == 404 or r.status_code == 403:
+                print("NUM 1")
                 r = None
         except Exception:
             # fail on any kind of error
             r = None
     else:
+        print("NUM2")
         r = None
     return r
 
@@ -128,13 +129,32 @@ def find_all_links(link, soup):
                 new_links.append(l)
         return new_links
 
-def create_csv():
+def create_csv(data):
     """
     Creates a csv file based on the important links found
     """
-    with open(''):
-        pass
+    curr_date = date.today()
+    formatted_curr_date = curr_date.strftime('%m/%d/%Y')
+
+    filename = '{}_scraped_links.csv'.format(formatted_curr_date)
+    with open(filename, 'w') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerows(data)
+
+def to_string(important_links):
+    """
+    Formats all the websites in a cleaner manner in the text box below
+    """
+    for url, title in important_links:
+        try:
+            cleaned_title = re.sub(r"<title>|</title>", "", title)
+            print("Title: {}".format(cleaned_title))
+        except:
+            print("Title: {}".format(title))
+        print("URL: {}".format(url))
+        print("-----")
 
 if __name__ == "__main__":
-    important_links = multi_go(LINK1)
+    important_links = multi_go(LINKS)
     print(important_links)
+    #create_csv(important_links)
