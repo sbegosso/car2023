@@ -61,6 +61,7 @@ def go(link):
             for url in all_links:
                 if url not in visited_links and url[len(url) - 1] == '/':
                     queue.append((url, new_depth))
+
     print("SEARCH IS COMPLETE FOR: {}".format(link))
     return important_links
 
@@ -135,5 +136,5 @@ def create_csv():
         pass
 
 if __name__ == "__main__":
-    important_links = multi_go(LINKS)
+    important_links = multi_go(LINK1)
     print(important_links)
