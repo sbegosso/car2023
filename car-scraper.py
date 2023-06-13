@@ -7,13 +7,6 @@ import csv
 from datetime import date
 import re
 
-#input link
-LINK1 = str(sys.argv[1])
-LINK2 = str(sys.argv[2])
-LINK3 = str(sys.argv[3])
-
-LINKS = [LINK1, LINK2, LINK3]
-
 FIELDS = ['Date Accessed', 'URL', 'Title']
 
 CURR_DATE = date.today()
@@ -37,6 +30,16 @@ ANTI_KEY_WORDS = [
     "concept", "explorer"
 ]
 
+#input links
+n = int(input("Enter the number of inputs: "))
+INPUT_LINKS = []
+
+for i in range(n):
+    value = input("Enter input {}: ".format(i + 1))
+    INPUT_LINKS.append(value)
+
+print(INPUT_LINKS)
+
 def go(link):
     """
     The function where the the bfs search through the links exists
@@ -59,7 +62,7 @@ def go(link):
 
             #checks the title for key words
             if chk_title(soup.title):
-                important_links.add((CURR_DATE, current_url, soup.title.string))
+                important_links.add((F_CURR_DATE, current_url, soup.title.string))
 
             if depth < 1:
                 new_depth = depth + 1
@@ -162,7 +165,7 @@ def create_csv(fields, rows):
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(fields)
         csvwriter.writerows(rows)
-        csvwriter.writerow(LINKS)
+        csvwriter.writerow(INPUT_LINKS)
 
 def to_string(important_links):
     """
@@ -178,6 +181,6 @@ def to_string(important_links):
         print("-----")
 
 if __name__ == "__main__":
-    important_links = multi_go(LINKS)
+    important_links = multi_go(INPUT_LINKS)
     print(clean_data(important_links))
     create_csv(FIELDS, clean_data(important_links))
