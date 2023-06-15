@@ -38,8 +38,6 @@ for i in range(n):
     value = input("Enter input {}: ".format(i + 1))
     INPUT_LINKS.append(value)
 
-print(INPUT_LINKS)
-
 def go(link):
     """
     The function where the the bfs search through the links exists
