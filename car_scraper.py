@@ -54,31 +54,29 @@ def go(link):
 
         print(current_url)
 
-        try:    
+        try:
             req = get_request(current_url)
             soup = bs(req.content, "html5lib")
 
             #checks the title for key words
             title_tag = soup.find("title")
-            """title = title_tag.text
+            title = title_tag.text
             title = title.replace("\n", "")
-            title = title.replace("\t", "")"""
-            if chk_title(title_tag):
-                important_links.add((F_CURR_DATE, current_url, title_tag))
-
-            print("poopybumhole")
+            title = title.replace("\t", "")
+            if chk_title(title):
+                important_links.add((F_CURR_DATE, current_url, title))
 
             if depth < 1:
                 new_depth = depth + 1
-                    
+                
                 #extract all the links on the page
                 all_links = find_all_links(link, soup)
-                    
+                
                 for url in all_links:
                     if url not in visited_links:
                         queue.append((url, new_depth))
         except:
-            raise Exception
+            pass
 
     print("SEARCH IS COMPLETE FOR: {}".format(link))
     return important_links
@@ -103,9 +101,7 @@ def chk_title(title):
             word_lst.append(good_word)
     for bad_word in ANTI_KEY_WORDS:
         if bad_word in str_title:
-            print("BAD WORD: {}".format(bad_word))
             return False
-    print(word_lst)
     return len(word_lst) > 1 and len(str_title.split()) > 5
         
 
@@ -117,6 +113,9 @@ def get_request(link):
     if is_absolute_url(link):
         try:
             r = requests.get(link)
+            if r.status_code == 404 or r.status_code == 403:
+                print("NUM 1")
+                r = None
         except Exception:
             # fail on any kind of error
             r = None
@@ -137,12 +136,14 @@ def find_all_links(link, soup):
         """
         Creates a list of all the links in a soup
         """
+        new_links = []
         anchor_tags = soup.find_all('a')
         links = [str(tag.get('href')) for tag in anchor_tags]
-        print(links)
-        new_links = []
         for l in links:
-            new_links.append(l)
+            if l[0] == '/':
+                new_links.append(link[0: len(link) - 1] + l)
+            else:
+                new_links.append(l)
         return new_links
 
 def clean_data(data):
