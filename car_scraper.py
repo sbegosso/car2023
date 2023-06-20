@@ -1,4 +1,5 @@
 import urllib.parse
+from urllib.parse import urlparse
 import requests
 import os
 from bs4 import BeautifulSoup as bs
@@ -46,10 +47,18 @@ def go(link):
     important_links = set()
     visited_links = set()
     queue = [(link, 0)]
+    base_url = get_base_url(link)
 
     #bfs begins here
     while len(queue) > 0:
         current_url, depth = queue.pop(0)
+
+        try:
+            if current_url[0] == '/':
+                current_url = base_url + current_url
+        except:
+            pass
+
         visited_links.add(current_url)
 
         print(current_url)
@@ -136,15 +145,9 @@ def find_all_links(link, soup):
         """
         Creates a list of all the links in a soup
         """
-        new_links = []
         anchor_tags = soup.find_all('a')
         links = [str(tag.get('href')) for tag in anchor_tags]
-        for l in links:
-            if l[0] == '/':
-                new_links.append(link[0: len(link) - 1] + l)
-            else:
-                new_links.append(l)
-        return new_links
+        return links
 
 def clean_data(data):
     """
@@ -153,6 +156,14 @@ def clean_data(data):
     """
     list_of_lists = [list(t) for t in data]
     return list_of_lists
+
+def get_base_url(url):
+    """
+    Given a url, it will get the base of the url
+    """
+    parsed_url = urlparse(url)
+    base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+    return base_url
 
 def create_csv(fields, rows):
     """
