@@ -30,14 +30,15 @@ ANTI_KEY_WORDS = [
     "rumor", "rumors", "rumored", "guide", " sec ", "potential", "maybe", "podcast", "cute", "ebike", "alibaba", 
     "concept", "explorer"
 ]
-
-#input links
-n = int(input("Enter the number of inputs: "))
+# opening the CSV file
 INPUT_LINKS = []
-
-for i in range(n):
-    value = input("Enter input {}: ".format(i + 1))
-    INPUT_LINKS.append(value)
+with open('All_BoD_Sources.csv', mode = 'r') as file:
+    # reading the CSV file
+    csvFile = csv.reader(file)
+ 
+    # displaying the contents of the CSV file
+    for lines in csvFile:
+        INPUT_LINKS += lines
 
 def go(link):
     """
@@ -165,7 +166,7 @@ def get_base_url(url):
     base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
     return base_url
 
-def create_csv(fields, rows):
+def create_csv(fields, rows, links):
     """
     Turning the above data into a csv file... kind of an experiment for now
     """
@@ -178,7 +179,7 @@ def create_csv(fields, rows):
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(fields)
         csvwriter.writerows(rows)
-        csvwriter.writerow(INPUT_LINKS)
+        csvwriter.writerow(links)
 
 def to_string(important_links):
     """
@@ -194,7 +195,7 @@ def to_string(important_links):
         print("-----")
 
 if __name__ == "__main__":
-    important_links = multi_go(INPUT_LINKS)
+    important_links = multi_go(INPUT_LINKS[1:])
     print(len(clean_data(important_links)))
     print(clean_data(important_links))
-    create_csv(FIELDS, clean_data(important_links))
+    create_csv(FIELDS, clean_data(important_links), INPUT_LINKS[1:])
