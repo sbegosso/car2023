@@ -1,18 +1,36 @@
 ﻿Source,Target,Strength
-Dillygence,Borgwarner,1
-Dillygence,Magna,1
-Dillygence,Forvia,1
-Dillygence,Eaton,1
-Hive Electric,Steris,1
-Hive Electric,Invacare,1
-Hive Electric,LubriZol,1
-Numalliance,GoodYear,1
-Numalliance,Borgwarner,1
-Numalliance,Magna,1
-OSE Group,Forvia,1
-SIC Marking,Eaton,1
-SIC Marking,Steris,1
-SIC Marking,Invacare,1
-SpooN,LubriZol,1
-Sysgo,GoodYear,1
-Tra-C Industrie,GoodYear,1
+0,8,100
+0,9,100
+0,10,100
+0,12,100
+0,13,100
+0,15,100
+1,8,100
+1,9,100
+1,10,100
+1,11,100
+2,8,100
+2,9,100
+2,10,100
+2,11,100
+3,8,100
+3,9,100
+3,10,100
+3,11,100
+4,8,100
+4,9,100
+4,10,100
+4,11,100
+5,8,100
+5,9,100
+5,10,100
+5,11,100
+6,8,100
+6,9,100
+6,10,100
+6,12,100
+6,14,100
+7,8,100
+7,9,100
+7,10,100
+7,11,100
