@@ -1,3 +1,4 @@
+
 Directions to use Chord Diagarams Code.
 
 1. Create a csv file listing out all the entities in the first column. Do not add a title to this column. Pay attention to the order to which you list the entities. Name this file 'index.csv'. (An example 'index.csv' file has been provided).
